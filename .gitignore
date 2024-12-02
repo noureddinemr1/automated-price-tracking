@@ -167,3 +167,4 @@ firecrawl_output
 firecrawl_repo
 sample_projects
 .DS_Store
+data/price_history.db

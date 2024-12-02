@@ -1,6 +1,8 @@
+import os
 from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime
 from sqlalchemy.orm import sessionmaker, declarative_base
 from datetime import datetime
+from urllib.parse import urlparse
 
 Base = declarative_base()
 
@@ -26,8 +28,29 @@ class PriceHistory(Base):
     product_name = Column(String)
 
 
-engine = create_engine("sqlite:///data/price_history.db")
+def get_db_url():
+    """Get database URL with fallback to SQLite for local development"""
+    db_url = os.getenv("DATABASE_URL")
+    if db_url:
+        # Fix Supabase connection string if needed
+        result = urlparse(db_url)
+        if result.scheme == "postgres":
+            db_url = db_url.replace("postgres://", "postgresql://", 1)
+    else:
+        # Fallback for local development
+        db_url = "sqlite:///data/price_history.db"
+    return db_url
+
+
+engine = create_engine(
+    get_db_url(),
+    pool_pre_ping=True,  # Helps prevent disconnection errors
+    pool_size=5,
+    max_overflow=10,
+)
 Session = sessionmaker(bind=engine)
+
+# Create tables if they don't exist
 Base.metadata.create_all(engine)
 
 
