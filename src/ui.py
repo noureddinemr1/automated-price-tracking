@@ -79,12 +79,12 @@ class PriceTracker:
             if existing_product:
                 return False, "Product already being tracked!"
 
-            # Scrape product using original URL
-            product = await check_single_product(url)
+            # Scrape product using original URL but pass normalized URL
+            product = await check_single_product(url, normalized_url)
 
-            # Use normalized URL for database
+            # Create database product with normalized URL
             db_product = Product(
-                url=normalized_url,  # Use normalized URL
+                url=normalized_url,
                 name=product.name,
                 price=product.price,
                 currency=product.currency,
@@ -96,7 +96,7 @@ class PriceTracker:
             self.session.commit()
 
             # Use normalized URL for price history
-            self._create_price_history(normalized_url, product.price)
+            self._create_price_history(normalized_url, product.price, product.name)
 
             return (
                 True,
@@ -114,8 +114,13 @@ class PriceTracker:
         except ValueError:
             return False
 
-    def _create_price_history(self, url, price):
-        entry = PriceHistory(product_url=url, price=price, timestamp=datetime.now())
+    def _create_price_history(self, url, price, product_name):
+        entry = PriceHistory(
+            product_url=url,
+            price=price,
+            timestamp=datetime.now(),
+            product_name=product_name,
+        )
         self.session.add(entry)
         self.session.commit()
 

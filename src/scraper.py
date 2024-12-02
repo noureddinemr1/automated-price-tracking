@@ -1,13 +1,16 @@
 from firecrawl import FirecrawlApp
-from models import Product
-from storage import Session, PriceHistory
+from models import Product as PydanticProduct
+from storage import Session, PriceHistory, Product as DBProduct
 from notifications import send_price_alert
 from config import settings
+from dotenv import load_dotenv
 import asyncio
 import warnings
 
+load_dotenv()
 
-async def check_single_product(url: str) -> Product:
+
+async def check_single_product(url: str, normalized_url: str = None) -> PydanticProduct:
     """Check a single product URL and return its details."""
     app = FirecrawlApp()
 
@@ -15,11 +18,14 @@ async def check_single_product(url: str) -> Product:
         url,
         params={
             "formats": ["extract"],
-            "extract": {"schema": Product.model_json_schema()},
+            "extract": {"schema": PydanticProduct.model_json_schema()},
         },
     )
-
-    return Product(**data["extract"])
+    
+    product = PydanticProduct(**data["extract"])
+    if normalized_url:
+        product.url = normalized_url
+    return product
 
 
 async def check_prices():
@@ -29,7 +35,7 @@ async def check_prices():
 
     try:
         # Get all products from database
-        products = session.query(Product).all()
+        products = session.query(DBProduct).all()
 
         # Iterate over each product
         for product in products:
