@@ -23,6 +23,7 @@ class PriceHistory(Base):
     product_url = Column(String, index=True)
     price = Column(Float)
     timestamp = Column(DateTime, default=datetime.utcnow)
+    product_name = Column(String)
 
 
 engine = create_engine("sqlite:///data/price_history.db")
@@ -44,7 +45,8 @@ def print_price_history():
     records = session.query(PriceHistory).all()
 
     for record in records:
-        print(f"Product: {record.product_name}")
+        print(f"Product Name: {record.product_name}")
+        print(f"Product URL: {record.product_url}")
         print(f"Price: ${record.price:.2f}")
         print(f"Timestamp: {record.timestamp}")
         print("-" * 80)
