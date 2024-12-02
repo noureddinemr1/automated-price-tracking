@@ -53,9 +53,9 @@ def print_price_history():
 
 
 if __name__ == "__main__":
-    change_product_price(
-        "https://www.amazon.com/dp/B09HMV6K1W",
-        1000.99,
-    )
+    # change_product_price(
+    #     "https://www.amazon.com/dp/B09HMV6K1W",
+    #     1000.99,
+    # )
 
     print_price_history()
