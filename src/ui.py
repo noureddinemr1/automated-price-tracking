@@ -118,7 +118,7 @@ class PriceTracker:
         entry = PriceHistory(
             product_url=url,
             price=price,
-            timestamp=datetime.now(),
+            timestamp=datetime.utcnow(),
             product_name=product_name,
         )
         self.session.add(entry)
