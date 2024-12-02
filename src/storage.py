@@ -3,6 +3,9 @@ from sqlalchemy import create_engine, Column, Integer, String, Float, DateTime
 from sqlalchemy.orm import sessionmaker, declarative_base
 from datetime import datetime
 from urllib.parse import urlparse
+from dotenv import load_dotenv
+
+load_dotenv()
 
 Base = declarative_base()
 
@@ -30,12 +33,13 @@ class PriceHistory(Base):
 
 def get_db_url():
     """Get database URL with fallback to SQLite for local development"""
-    db_url = os.getenv("DATABASE_URL")
+    db_url = os.getenv("POSTGRES_URL")
     if db_url:
         # Fix Supabase connection string if needed
         result = urlparse(db_url)
         if result.scheme == "postgres":
             db_url = db_url.replace("postgres://", "postgresql://", 1)
+        print(f"Using PostgreSQL: {db_url}")
     else:
         # Fallback for local development
         db_url = "sqlite:///data/price_history.db"

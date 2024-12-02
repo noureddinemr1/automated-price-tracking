@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     FIRECRAWL_API_KEY: str
     DISCORD_WEBHOOK_URL: str
     PRICE_DROP_THRESHOLD: float = 0.05  # Minimum price drop percentage
+    POSTGRES_URL: str
 
     class Config:
         env_file = ".env"
