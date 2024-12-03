@@ -1,6 +1,6 @@
 import streamlit as st
 import asyncio
-from services.product_service import ProductService
+from src.services.product_service import ProductService
 
 
 class Sidebar:
