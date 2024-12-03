@@ -33,13 +33,14 @@ class ProductService:
 
             # Add initial price history
             price_history = PriceHistoryCreate(
-                product_url=product.url, 
-                price=product.price, 
-                product_name=product.name
+                product_url=product.url, price=product.price, product_name=product.name
             )
             self.repository.add_price_history(price_history)
 
-            return True, f"Added and checked initial price for: {product.name} - ${product.price:.2f}"
+            return (
+                True,
+                f"Added and checked initial price for: {product.name} - ${product.price:.2f}",
+            )
 
         except Exception as e:
             print(f"Error: {str(e)}")
@@ -55,7 +56,7 @@ class ProductService:
 
     async def _scrape_product(self, url: str) -> ProductCreate:
         """Scrape product details"""
-        data = self.firecrawl.scrape_url(
+        data = await self.firecrawl.scrape_url(
             url,
             params={
                 "formats": ["extract"],

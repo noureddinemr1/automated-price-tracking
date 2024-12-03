@@ -3,7 +3,7 @@ from datetime import datetime
 from firecrawl import FirecrawlApp
 
 from infrastructure.repositories.product_repository import ProductRepository
-from domain.models import Product, PriceHistoryCreate
+from domain.models import Product, PriceHistoryCreate, ProductCreate
 from services.notifications import send_price_alert
 from config import settings
 
@@ -21,13 +21,21 @@ class PriceService:
         for product in products:
             try:
                 # Get latest price
-                scraped_data = await self.firecrawl.scrape_url(product.url)
+                scraped_data = self.firecrawl.scrape_url(
+                    product.url,
+                    params={
+                        "formats": ["extract"],
+                        "extract": {"schema": ProductCreate.model_json_schema()},
+                    },
+                )
                 new_price = scraped_data["extract"]["price"]
 
                 # Get earliest price from history
                 price_history = self.repository.get_price_history(product.url)
                 if price_history:
-                    oldest_price = price_history[0].price  # Compare with first (oldest) price
+                    oldest_price = price_history[
+                        0
+                    ].price  # Compare with first (oldest) price
                     if oldest_price > new_price:
                         drop_pct = (oldest_price - new_price) / oldest_price
 
