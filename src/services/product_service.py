@@ -54,7 +54,7 @@ class ProductService:
 
     async def _scrape_product(self, url: str) -> ProductCreate:
         """Scrape product details"""
-        data = await self.firecrawl.scrape_url(
+        data = self.firecrawl.scrape_url(
             url,
             params={
                 "formats": ["extract"],
