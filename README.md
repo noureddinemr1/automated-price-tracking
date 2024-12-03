@@ -16,6 +16,6 @@ Here is a typical workflow users must experience when they visit the app:
 
 They open the app and the app immediately presents them with the existing products in the database and their price history chart. If there are no products, it should inform the user as such and gently nudge them to enter a product through the sidebar.
 
-In the sidebar, there must always be an input field for a product URL. When the URL is entered, it must first be checked against existing products. If not, then, its page must scraped, its initial price extracted and saved and it must be added to the list of tracked products and added to the UI. 
+In the sidebar, there must always be an input field for a product URL. When the URL is entered, it must first be checked against existing products. If not, then, its page must scraped, its initial price extracted and saved and it must be added to the list of tracked products and added to the UI.
 
-There must be a button to remove existing products and also a button for visiting the products page. 
+There must be a button to remove existing products and also a button for visiting the products page.
