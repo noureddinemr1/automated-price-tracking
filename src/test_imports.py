@@ -1,5 +1,7 @@
 from infrastructure.repositories.product_repository import ProductRepository
-from infrastructure.database import Product, PriceHistory, SessionLocal
+from infrastructure.database import SessionLocal
+from domain.models import ProductCreate, PriceHistoryCreate
+from datetime import datetime
 
 # Create a session
 session = SessionLocal()
@@ -11,6 +13,26 @@ try:
     # Test getting all products
     products = repo.get_all()
     print(f"Found {len(products)} products")
-    print("Imports and basic functionality working correctly!")
+
+    # Test adding a product
+    if len(products) == 0:
+        test_product = ProductCreate(
+            url="https://example.com/test",
+            name="Test Product",
+            price=99.99,
+            currency="USD",
+            main_image_url="https://example.com/image.jpg",
+        )
+        product = repo.add(test_product)
+        print(f"Added test product: {product.name}")
+
+        # Test adding price history
+        price_history = PriceHistoryCreate(
+            product_url=product.url, price=product.price, product_name=product.name
+        )
+        history = repo.add_price_history(price_history)
+        print(f"Added price history: {history.price}")
+
+    print("All tests passed!")
 finally:
     session.close()
