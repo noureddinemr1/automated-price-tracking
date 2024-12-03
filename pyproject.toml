@@ -4,7 +4,8 @@ version = "0.1.0"
 description = ""
 authors = ["BexTuychiev <bex@ibexprogramming.com>"]
 readme = "README.md"
-package-mode = false
+packages = [{include = "src"}]
+package-mode = true
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -34,3 +35,6 @@ asyncio_mode = "strict"
 asyncio_fixture_loop_scope = "function"
 pythonpath = ["src"]
 testpaths = ["src/tests"]
+
+[tool.poetry.scripts]
+app = "src.main:main"

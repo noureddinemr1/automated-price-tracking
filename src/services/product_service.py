@@ -89,3 +89,9 @@ class ProductService:
         product_data = data["extract"]
         product_data["url"] = normalized_url
         return ProductCreate(**product_data)
+
+    def remove_product(self, url: str) -> None:
+        """Remove a product and its price history"""
+        product = self.repository.get(url)
+        if product:
+            self.repository.delete(url)
