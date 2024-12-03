@@ -1,3 +1,7 @@
+import warnings
+
+warnings.filterwarnings("ignore", message='Field name "schema" in')
+
 import asyncio
 from services.price_service import PriceService
 from infrastructure.repositories.product_repository import ProductRepository

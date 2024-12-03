@@ -1,5 +1,5 @@
 import aiohttp
-from src.config import settings
+from ..config import settings
 
 
 async def send_price_alert(
