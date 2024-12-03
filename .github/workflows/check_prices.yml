@@ -2,8 +2,8 @@ name: Check Product Prices
 
 on:
   schedule:
-    # Run every 2 hours
-    - cron: "0 */2 * * *"
+    # Run every 3 minutes
+    - cron: "*/3 * * * *"
   workflow_dispatch: # Allows manual triggering
 
 # Add permissions for the GitHub bot
@@ -37,4 +37,4 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           PRICE_DROP_THRESHOLD: 0.05
           POSTGRES_URL: ${{ secrets.POSTGRES_URL }}
-        run: python src/scraper.py
+        run: python src/check_prices.py
