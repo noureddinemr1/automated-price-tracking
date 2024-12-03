@@ -2,8 +2,8 @@ name: Check Product Prices
 
 on:
   schedule:
-    # Run every 6 hours
-    - cron: "* */6 * * *"
+    # Run every 2 hours
+    - cron: "* */2 * * *"
   workflow_dispatch: # Allows manual triggering
 
 # Add permissions for the GitHub bot
