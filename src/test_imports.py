@@ -1,6 +1,6 @@
-from infrastructure.repositories.product_repository import ProductRepository
-from infrastructure.database import SessionLocal
-from domain.models import ProductCreate, PriceHistoryCreate
+from src.infrastructure.repositories.product_repository import ProductRepository
+from src.infrastructure.database import SessionLocal
+from src.domain.models import ProductCreate, PriceHistoryCreate
 from datetime import datetime
 
 # Create a session

@@ -5,8 +5,6 @@ from src.infrastructure.database import get_session
 from src.infrastructure.repositories.product_repository import ProductRepository
 from src.services.price_service import PriceService
 
-warnings.filterwarnings("ignore", message='Field name "schema" in')
-
 
 async def main():
     session = next(get_session())
