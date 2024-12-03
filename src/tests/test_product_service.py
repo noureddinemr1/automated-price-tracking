@@ -62,15 +62,9 @@ async def test_add_product(service):
     assert not success
     assert message == "Please enter a valid URL"
 
-    # Test invalid Amazon URL
-    success, message = await service.add_product("https://amazon.com/invalid")
-    assert not success
-    assert message == "Invalid Amazon product URL"
-
-    # Test valid Amazon URL
-    test_url = "https://www.amazon.com/dp/B09HMV6K1W"
+    # Test valid URL
+    test_url = "https://www.example.com/product/123"
     success, message = await service.add_product(test_url)
-    print(f"Success: {success}, Message: {message}")  # Debug print
     assert success, f"Failed to add product: {message}"
     assert "Added and checked initial price for:" in message
 

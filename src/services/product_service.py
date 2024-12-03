@@ -20,35 +20,26 @@ class ProductService:
             return False, "Please enter a valid URL"
 
         try:
-            normalized_url = self._normalize_amazon_url(url)
-            print(f"Normalized URL: {normalized_url}")
-            if not normalized_url:
-                return False, "Invalid Amazon product URL"
-
             # Check if product exists
-            existing_product = self.repository.get(normalized_url)
-            print(f"Existing product: {existing_product}")
+            existing_product = self.repository.get(url)
             if existing_product:
                 return False, "Product already being tracked!"
 
             # Scrape product
-            scraped_product = await self._scrape_product(url, normalized_url)
-            print(f"Scraped product: {scraped_product}")
+            scraped_product = await self._scrape_product(url)
 
             # Create product
             product = self.repository.add(scraped_product)
-            print(f"Added product: {product}")
 
             # Add initial price history
             price_history = PriceHistoryCreate(
-                product_url=product.url, price=product.price, product_name=product.name
+                product_url=product.url, 
+                price=product.price, 
+                product_name=product.name
             )
             self.repository.add_price_history(price_history)
 
-            return (
-                True,
-                f"Added and checked initial price for: {product.name} - ${product.price:.2f}",
-            )
+            return True, f"Added and checked initial price for: {product.name} - ${product.price:.2f}"
 
         except Exception as e:
             print(f"Error: {str(e)}")
@@ -62,22 +53,7 @@ class ProductService:
         except ValueError:
             return False
 
-    def _normalize_amazon_url(self, url: str) -> Optional[str]:
-        """Normalize Amazon URL to consistent format"""
-        try:
-            if "/dp/" in url:
-                asin = url.split("/dp/")[1].split("/")[0]
-            elif "/gp/product/" in url:
-                asin = url.split("/gp/product/")[1].split("/")[0]
-            elif "/gp/aw/d/" in url:
-                asin = url.split("/gp/aw/d/")[1].split("/")[0]
-            else:
-                return None
-            return f"https://www.amazon.com/dp/{asin}"
-        except Exception:
-            return None
-
-    async def _scrape_product(self, url: str, normalized_url: str) -> ProductCreate:
+    async def _scrape_product(self, url: str) -> ProductCreate:
         """Scrape product details"""
         data = self.firecrawl.scrape_url(
             url,
@@ -87,7 +63,7 @@ class ProductService:
             },
         )
         product_data = data["extract"]
-        product_data["url"] = normalized_url
+        product_data["url"] = url  # Use original URL
         return ProductCreate(**product_data)
 
     def remove_product(self, url: str) -> None:
