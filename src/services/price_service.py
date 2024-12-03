@@ -1,11 +1,11 @@
 from typing import List
-from datetime import datetime
+
 from firecrawl import FirecrawlApp
 
-from infrastructure.repositories.product_repository import ProductRepository
-from domain.models import Product, PriceHistoryCreate, ProductCreate
-from services.notifications import send_price_alert
-from config import settings
+from src.config import settings
+from src.domain.models import Product, ProductCreate, PriceHistoryCreate
+from src.infrastructure.repositories.product_repository import ProductRepository
+from src.services.notifications import send_price_alert
 
 
 class PriceService:

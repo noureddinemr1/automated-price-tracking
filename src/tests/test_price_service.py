@@ -3,10 +3,10 @@ from unittest.mock import Mock, patch
 from sqlalchemy import text
 from datetime import datetime
 
-from infrastructure.repositories.product_repository import ProductRepository
-from infrastructure.database import SessionLocal
-from services.price_service import PriceService
-from domain.models import Product, PriceHistoryCreate
+from src.infrastructure.repositories.product_repository import ProductRepository
+from src.infrastructure.database import SessionLocal
+from src.services.price_service import PriceService
+from src.domain.models import Product, PriceHistoryCreate
 
 
 @pytest.fixture(autouse=True)

@@ -1,10 +1,10 @@
 import pytest
 from unittest.mock import Mock, patch
 from sqlalchemy import text
-from infrastructure.repositories.product_repository import ProductRepository
-from infrastructure.database import SessionLocal
-from services.product_service import ProductService
-from domain.models import ProductCreate
+from src.infrastructure.repositories.product_repository import ProductRepository
+from src.infrastructure.database import SessionLocal
+from src.services.product_service import ProductService
+from src.domain.models import ProductCreate
 
 
 @pytest.fixture(autouse=True)

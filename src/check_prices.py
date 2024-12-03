@@ -1,11 +1,11 @@
+import asyncio
 import warnings
 
-warnings.filterwarnings("ignore", message='Field name "schema" in')
+from src.infrastructure.database import get_session
+from src.infrastructure.repositories.product_repository import ProductRepository
+from src.services.price_service import PriceService
 
-import asyncio
-from services.price_service import PriceService
-from infrastructure.repositories.product_repository import ProductRepository
-from infrastructure.database import get_session
+warnings.filterwarnings("ignore", message='Field name "schema" in')
 
 
 async def main():

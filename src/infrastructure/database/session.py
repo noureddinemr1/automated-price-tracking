@@ -1,8 +1,10 @@
 import os
+from urllib.parse import urlparse
+
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from urllib.parse import urlparse
-from dotenv import load_dotenv
+
 from .models import Base
 
 load_dotenv()

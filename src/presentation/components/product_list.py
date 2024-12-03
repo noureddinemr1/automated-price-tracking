@@ -1,9 +1,10 @@
-import streamlit as st
 import pandas as pd
 import plotly.express as px
+import streamlit as st
 from sqlalchemy import desc
-from services.product_service import ProductService
-from presentation.components.price_chart import PriceChart
+
+from src.services.product_service import ProductService
+from .price_chart import PriceChart
 
 
 class ProductList:

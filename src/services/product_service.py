@@ -1,12 +1,10 @@
-from typing import Tuple, Optional
+from typing import Tuple
 from urllib.parse import urlparse
-from datetime import datetime
+
 from firecrawl import FirecrawlApp
 
-from infrastructure.repositories.product_repository import ProductRepository
-from domain.models import ProductCreate, PriceHistoryCreate, Product
-from services.notifications import send_price_alert
-from config import settings
+from src.domain.models import ProductCreate, PriceHistoryCreate
+from src.infrastructure.repositories.product_repository import ProductRepository
 
 
 class ProductService:

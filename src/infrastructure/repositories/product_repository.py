@@ -1,10 +1,12 @@
+from datetime import datetime
 from typing import List, Optional
-from sqlalchemy.orm import Session
+
 from sqlalchemy import desc
+from sqlalchemy.orm import Session
+
+from src.domain.models import Product, ProductCreate, PriceHistory, PriceHistoryCreate
 from .base import BaseRepository
 from ..database.models import Product as DBProduct, PriceHistory as DBPriceHistory
-from domain.models import Product, ProductCreate, PriceHistory, PriceHistoryCreate
-from datetime import datetime
 
 
 class ProductRepository(BaseRepository[Product]):

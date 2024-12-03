@@ -1,18 +1,19 @@
-import streamlit as st
 import os
 import sys
+
+import streamlit as st
+
+from src.infrastructure.database import get_session
+from src.infrastructure.repositories.product_repository import ProductRepository
+from src.presentation.components.product_list import ProductList
+from src.presentation.components.sidebar import Sidebar
+from src.services.price_service import PriceService
+from src.services.product_service import ProductService
 
 # Add src to Python path
 src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if src_path not in sys.path:
     sys.path.insert(0, src_path)
-
-from infrastructure.database import get_session
-from infrastructure.repositories.product_repository import ProductRepository
-from services.product_service import ProductService
-from services.price_service import PriceService
-from presentation.components.sidebar import Sidebar
-from presentation.components.product_list import ProductList
 
 
 def init_services():
