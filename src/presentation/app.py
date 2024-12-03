@@ -10,11 +10,6 @@ from src.presentation.components.sidebar import Sidebar
 from src.services.price_service import PriceService
 from src.services.product_service import ProductService
 
-# Add src to Python path
-src_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-if src_path not in sys.path:
-    sys.path.insert(0, src_path)
-
 
 def init_services():
     """Initialize services with dependencies"""
