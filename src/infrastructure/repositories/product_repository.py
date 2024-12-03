@@ -1,8 +1,10 @@
 from typing import List, Optional
 from sqlalchemy.orm import Session
+from sqlalchemy import desc
 from .base import BaseRepository
 from ..database.models import Product as DBProduct, PriceHistory as DBPriceHistory
 from domain.models import Product, ProductCreate, PriceHistory, PriceHistoryCreate
+from datetime import datetime
 
 
 class ProductRepository(BaseRepository[Product]):
@@ -57,7 +59,7 @@ class ProductRepository(BaseRepository[Product]):
         db_histories = (
             self.session.query(DBPriceHistory)
             .filter_by(product_url=product_url)
-            .order_by(DBPriceHistory.timestamp.desc())
+            .order_by(DBPriceHistory.timestamp.asc())
             .all()
         )
         return [self._to_price_history_domain(h) for h in db_histories]
@@ -68,3 +70,18 @@ class ProductRepository(BaseRepository[Product]):
         self.session.add(db_price_history)
         self.session.commit()
         return self._to_price_history_domain(db_price_history)
+
+    def update(self, product: Product) -> Product:
+        """Update a product in the database"""
+        db_product = (
+            self.session.query(DBProduct).filter(DBProduct.url == product.url).first()
+        )
+        if db_product:
+            db_product.price = product.price
+            db_product.name = product.name
+            db_product.currency = product.currency
+            db_product.main_image_url = product.main_image_url
+            db_product.check_date = datetime.now().isoformat()
+            self.session.commit()
+            return product
+        raise ValueError(f"Product with URL {product.url} not found")
