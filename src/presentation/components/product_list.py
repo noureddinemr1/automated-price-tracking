@@ -14,7 +14,9 @@ class ProductList:
 
     def render(self, products):
         for product in products:
-            with st.expander(f"{product.name}", expanded=False):
+            with st.container():
+                st.markdown(f"#### {product.name}")
+
                 col1, col2, col3 = st.columns([1, 3, 1])
 
                 # Display product image
@@ -54,3 +56,4 @@ class ProductList:
                     self.product_service.remove_product(product.url)
                     st.success("Product removed from tracking!")
                     st.rerun()
+            st.markdown("--------")
