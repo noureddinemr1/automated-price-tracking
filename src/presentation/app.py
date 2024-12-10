@@ -41,6 +41,10 @@ def render_dashboard(product_service: ProductService, price_service: PriceServic
 def main():
     st.set_page_config(page_title="Price Tracker", page_icon="📊", layout="wide")
 
+    # Disable file watcher in Streamlit Cloud
+    if os.getenv("STREAMLIT_SERVER_ADDRESS"):
+        st.set_option("server.fileWatcherType", "none")
+
     # Initialize services
     product_service, price_service = init_services()
 
