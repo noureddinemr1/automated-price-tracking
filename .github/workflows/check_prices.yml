@@ -2,7 +2,7 @@ name: Check Product Prices
 
 on:
   schedule:
-    # Run every 3 minutes
+    # Run every 6 hours
     - cron: "0 0,6,12,18 * * *"
   workflow_dispatch: # Allows manual triggering
 
