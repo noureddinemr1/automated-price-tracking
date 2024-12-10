@@ -15,7 +15,13 @@ class ProductList:
     def render(self, products):
         for product in products:
             with st.expander(f"{product.name}", expanded=False):
-                col1, col2, col3 = st.columns([3, 1, 1])
+                col1, col2, col3 = st.columns([1, 3, 1])
+
+                # Display product image
+                try:
+                    col1.image(product.main_image_url, use_container_width=True)
+                except Exception as e:
+                    col1.error("Image could not be loaded for this product.")
 
                 # Get price history
                 price_history = self.product_service.repository.get_price_history(
@@ -33,13 +39,13 @@ class ProductList:
 
                     # Create and display chart
                     fig = self.price_chart.create(df)
-                    col1.plotly_chart(fig, use_container_width=True)
+                    col2.plotly_chart(fig, use_container_width=True)
 
                     # Show current price
                     latest_price = price_history[-1].price
-                    col2.metric("Current Price", f"${latest_price:.2f}", delta=None)
+                    col3.metric("Current Price", f"${latest_price:.2f}", delta=None)
                 else:
-                    col1.info("No price history available")
+                    col2.info("No price history available")
 
                 # Add visit product button
                 col3.link_button("Visit Product", product.url)
