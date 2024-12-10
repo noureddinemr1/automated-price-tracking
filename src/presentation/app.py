@@ -29,6 +29,7 @@ def render_dashboard(product_service: ProductService, price_service: PriceServic
 
     # Main content
     st.header("Tracked Products")
+    st.markdown("---")
     products = product_service.repository.get_all()
 
     if not products:
