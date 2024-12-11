@@ -1,8 +1,8 @@
 from typing import Tuple
+from datetime import datetime
 from urllib.parse import urlparse
 
 from firecrawl import FirecrawlApp
-
 from src.domain.models import ProductCreate, PriceHistoryCreate
 from src.infrastructure.repositories.product_repository import ProductRepository
 
@@ -63,6 +63,7 @@ class ProductService:
         )
         product_data = data["extract"]
         product_data["url"] = url  # Use original URL
+        product_data["check_date"] = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
         return ProductCreate(**product_data)
 
     def remove_product(self, url: str) -> None:
