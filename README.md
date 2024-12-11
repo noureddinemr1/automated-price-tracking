@@ -2,6 +2,8 @@
 
 A powerful web application that helps you track product prices across various e-commerce websites. Get notified via Discord when prices drop below your desired threshold! Perfect for deal hunters, online shoppers, and anyone looking to save money on their favorite products.
 
+![A screenshot of the Streamlit app showing a list of tracked products with their price history charts](static/app-demo.png)
+
 See the products I am tracking via [this Streamlit app](https://automated-price-tracker.streamlit.app/).
 
 ## Features

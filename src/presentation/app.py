@@ -23,6 +23,12 @@ def init_services():
 def render_dashboard(product_service: ProductService, price_service: PriceService):
     st.title("Price Tracker Dashboard")
 
+    # Give a brief info about the app
+    st.markdown(
+        """##### Track product prices across e-commerce sites and get Discord notifications when prices drop. See setup instructions in the [GitHub repo](https://github.com/BexTuychiev/automated-price-tracking). View my tracked products below.
+        """
+    )
+
     # Render sidebar
     sidebar = Sidebar(product_service)
     sidebar.render()
@@ -30,6 +36,7 @@ def render_dashboard(product_service: ProductService, price_service: PriceServic
     # Main content
     st.header("Tracked Products")
     st.markdown("---")
+
     products = product_service.repository.get_all()
 
     if not products:
