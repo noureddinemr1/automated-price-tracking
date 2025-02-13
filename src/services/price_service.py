@@ -1,5 +1,4 @@
 from typing import List
-
 from firecrawl import FirecrawlApp
 
 from src.config import settings
@@ -20,22 +19,24 @@ class PriceService:
 
         for product in products:
             try:
+                # Prepare API request parameters
+                params = {
+                    "formats": ["extract"],
+                    "extract": {"schema": ProductCreate.model_json_schema()},
+                }
+
+                # Include the optional "prompt" field if available
+                if hasattr(product, "prompt") and product.prompt:
+                    params["prompt"] = product.prompt
+
                 # Get latest price
-                scraped_data = self.firecrawl.scrape_url(
-                    product.url,
-                    params={
-                        "formats": ["extract"],
-                        "extract": {"schema": ProductCreate.model_json_schema()},
-                    },
-                )
+                scraped_data = self.firecrawl.scrape_url(product.url, params=params)
                 new_price = scraped_data["extract"]["price"]
 
                 # Get earliest price from history
                 price_history = self.repository.get_price_history(product.url)
                 if price_history:
-                    oldest_price = price_history[
-                        0
-                    ].price  # Compare with first (oldest) price
+                    oldest_price = price_history[0].price  # Compare with first (oldest) price
                     if oldest_price > new_price:
                         drop_pct = (oldest_price - new_price) / oldest_price
 
