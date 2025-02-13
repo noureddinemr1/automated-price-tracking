@@ -1,29 +1,52 @@
+import sys
+import os
 from firecrawl import FirecrawlApp
 from dotenv import load_dotenv
-import os
+import datetime
+
+
+# Add the 'src' directory to the Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+# Import the ProductCreate schema from the domain.models module
+from domain.models import ProductCreate, PriceHistoryCreate
 
 # Load environment variables
 load_dotenv()
 
 # Initialize the FirecrawlApp with your API key
 api_key = os.getenv("FIRECRAWL_API_KEY")
+if not api_key:
+    raise ValueError("FIRECRAWL_API_KEY environment variable is not set.")
+
 app = FirecrawlApp(api_key=api_key)
 
 # URL of the product to scrape
-mytek_product = "https://www.mytek.tn/pc-portable-lenovo-ideapad-slim-3-15iru8-i3-13e-gen-8g-256g-ssd-gris.html"
+url = "https://www.sbsinformatique.com/souris-gamer-tunisie/souris-gamer-havit-ms1027-tunisie"
 
-# Scrape the product page
-data = app.scrape_url(mytek_product)
+data = app.scrape_url(
+            url,
+            params={
+                "formats": ["extract"],
+                "extract": {"schema": ProductCreate.model_json_schema()},
+            },
+        )
+product_data = {}
 
-# Print the entire scraped data for inspection
+ # Use original URL
+extract = data["extract"]
+product_data["url"] = url
 
-# Extract the price and currency from metadata
-product = data.get("metadata", {})
-price = product.get("product:price:amount")
-currency = product.get("product:price:currency")
+# Iterate through the metadata to find the price
+for key, value in extract.items():
+    if "name" in key.lower() or "title" in key.lower():
+        product_data["name"] = value
+    if "price" in key.lower():
+        product_data["price"] = value
+    if "currency" in key.lower():
+        product_data["currency"] = value
+    if "image" in key.lower():
+        product_data["main_image_url"] = value
 
-# Print the results
-if price and currency:
-    print(f"Price: {price} {currency}")
-else:
-    print("Price or currency not found in the scraped data.")
+#get system date now
+print(product_data)
