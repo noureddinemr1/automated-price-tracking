@@ -1,5 +1,4 @@
 import pandas as pd
-import plotly.express as px
 import streamlit as st
 from sqlalchemy import desc
 
@@ -39,13 +38,18 @@ class ProductList:
                         ]
                     )
 
+                    # Find the lowest price and cabin type
+                    lowest_price = df["price"].min()
+                    cabin_type = price_history[-1].cabin_type if hasattr(price_history[-1], "cabin_type") else "N/A"
+
                     # Create and display chart
-                    fig = self.price_chart.create(df)
+                    fig = self.price_chart.create(df, cabin_type=cabin_type)
                     col2.plotly_chart(fig, use_container_width=True)
 
-                    # Show current price
+                    # Show current price and lowest price
                     latest_price = price_history[-1].price
                     col3.metric("Current Price", f"${latest_price:.2f}", delta=None)
+                    col3.metric("Lowest Price", f"${lowest_price:.2f}", delta=None)
                 else:
                     col2.info("No price history available")
 

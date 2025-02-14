@@ -21,8 +21,9 @@ async def check_prices(self) -> List[Product]:
     for product in products:
         try:
             # Get latest price
-            scraped_data = self.firecrawl.scrape_url(product.url, params=params)
-            new_price = scraped_data["extract"]["price"]
+            scraped_data = self.firecrawl.scrape_url(product.url, params=params) # type: ignore
+            new_price = float(scraped_data["extract"]["price"])
+            if not new_price : new_price = float(scraped_data["metadata"]["price"])
             cabin_type = scraped_data["extract"].get("cabin_type")  # Extract cabin type from Firecrawl response
 
             # Get all price history for the product

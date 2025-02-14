@@ -26,5 +26,5 @@ class PriceHistory(Base):
     price = Column(Float)
     timestamp = Column(DateTime, default=datetime.utcnow)
     product_name = Column(String)
-    cabin_type = Column(String)  # New field
-    is_lowest = Column(Boolean, default=False)  # New field
+    cabin_type = Column(String)  # New column
+    is_lowest = Column(Boolean, default=False)  # New column

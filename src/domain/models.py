@@ -18,6 +18,7 @@ class ProductCreate(BaseModel):
     class Config:
         from_attributes = True  # Enables ORM mode
 
+
 class Product(ProductCreate):
     """Schema for reading a product"""
 
@@ -35,3 +36,10 @@ class PriceHistoryCreate(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+class PriceHistory(PriceHistoryCreate):
+    """Schema for reading a price history entry"""
+
+    id: int
+    timestamp: datetime
