@@ -1,3 +1,4 @@
+#product_service
 from typing import Tuple, Optional, Dict, Any
 from datetime import datetime
 from urllib.parse import urlparse
@@ -72,7 +73,7 @@ class ProductService:
         metadata = data.get("metadata", {})
 
         # Merge extract and metadata, prioritizing extract
-        merged_data = {**metadata, **extract}
+        merged_data = {**extract,**metadata}
 
         # Extract product details using a generalized approach
         product_data.update(self._extract_product_details(merged_data))

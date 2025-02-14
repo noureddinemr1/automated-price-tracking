@@ -22,7 +22,7 @@ if not api_key:
 app = FirecrawlApp(api_key=api_key)
 
 # URL of the product to scrape
-url = "https://www.sbsinformatique.com/souris-gamer-tunisie/souris-gamer-havit-ms1027-tunisie"
+url = "https://megapc.tn/shop/product/MSI-GeForce-GTX-1660-Ti-ARMOR-6GB-OC"
 
 data = app.scrape_url(
             url,

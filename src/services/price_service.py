@@ -1,3 +1,4 @@
+#price_service
 from typing import List
 from firecrawl import FirecrawlApp
 
@@ -12,58 +13,42 @@ class PriceService:
         self.repository = product_repository
         self.firecrawl = FirecrawlApp()
 
-    async def check_prices(self) -> List[Product]:
-        """Check prices for all tracked products and send alerts if needed"""
-        products = self.repository.get_all()
-        updated_products = []
+async def check_prices(self) -> List[Product]:
+    """Check prices for all tracked products and send alerts if needed"""
+    products = self.repository.get_all()
+    updated_products = []
 
-        for product in products:
-            try:
-                # Prepare API request parameters
-                params = {
-                    "formats": ["extract"],
-                    "extract": {"schema": ProductCreate.model_json_schema()},
-                }
+    for product in products:
+        try:
+            # Get latest price
+            scraped_data = self.firecrawl.scrape_url(product.url, params=params)
+            new_price = scraped_data["extract"]["price"]
+            cabin_type = scraped_data["extract"].get("cabin_type")  # Extract cabin type from Firecrawl response
 
-                # Include the optional "prompt" field if available
-                if hasattr(product, "prompt") and product.prompt:
-                    params["prompt"] = product.prompt
+            # Get all price history for the product
+            price_history = self.repository.get_price_history(product.url)
 
-                # Get latest price
-                scraped_data = self.firecrawl.scrape_url(product.url, params=params)
-                new_price = scraped_data["extract"]["price"]
+            # Find the lowest price across all cabin types
+            lowest_price = min([ph.price for ph in price_history], default=new_price)
 
-                # Get earliest price from history
-                price_history = self.repository.get_price_history(product.url)
-                if price_history:
-                    oldest_price = price_history[0].price  # Compare with first (oldest) price
-                    if oldest_price > new_price:
-                        drop_pct = (oldest_price - new_price) / oldest_price
+            # Save new price history
+            price_history = PriceHistoryCreate(
+                product_url=product.url,
+                price=new_price,
+                product_name=product.name,
+                cabin_type=cabin_type,
+                is_lowest=(new_price <= lowest_price),  # Mark as lowest if applicable
+            )
+            self.repository.add_price_history(price_history)
 
-                        if drop_pct >= settings.PRICE_DROP_THRESHOLD:
-                            await send_price_alert(
-                                product.name,
-                                oldest_price,
-                                new_price,
-                                product.url,
-                            )
+            # Update product price in database
+            product.price = new_price
+            self.repository.update(product)
 
-                # Save new price history BEFORE updating product
-                price_history = PriceHistoryCreate(
-                    product_url=product.url,
-                    price=new_price,
-                    product_name=product.name,
-                )
-                self.repository.add_price_history(price_history)
+            updated_products.append(product)
 
-                # Update product price in database
-                product.price = new_price
-                self.repository.update(product)
+        except Exception as e:
+            print(f"Error checking price for {product.url}: {e}")
+            continue
 
-                updated_products.append(product)
-
-            except Exception as e:
-                print(f"Error checking price for {product.url}: {e}")
-                continue
-
-        return updated_products
+    return updated_products

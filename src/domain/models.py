@@ -13,10 +13,10 @@ class ProductCreate(BaseModel):
     currency: str = Field(description="Currency code (USD, EUR, etc)")
     main_image_url: str = Field(description="The URL of the main image of the product")
     check_date: str
+    prompt: Optional[str] = Field(default=None, description="AI-driven scraping guidance for Firecrawl API")  # New field
 
     class Config:
         from_attributes = True  # Enables ORM mode
-
 
 class Product(ProductCreate):
     """Schema for reading a product"""
@@ -30,13 +30,8 @@ class PriceHistoryCreate(BaseModel):
     product_url: str
     price: float
     product_name: str
+    cabin_type: Optional[str] = Field(default=None, description="Type of cabin (e.g., Economy, Business)")  # New field
+    is_lowest: bool = Field(default=False, description="Indicates if this is the lowest price across all cabin types")  # New field
 
     class Config:
         from_attributes = True
-
-
-class PriceHistory(PriceHistoryCreate):
-    """Schema for reading a price history entry"""
-
-    id: int
-    timestamp: datetime
