@@ -19,7 +19,15 @@ class ProductRepository(BaseRepository[Product]):
 
     def _to_db(self, product: ProductCreate) -> DBProduct:
         """Convert domain model to DB model"""
-        return DBProduct(**product.model_dump())
+        return DBProduct(
+            url=product.url,
+            name=product.name,
+            price=product.price,
+            currency=product.currency,
+            main_image_url=product.main_image_url,
+            check_date=product.check_date,
+            prompt=product.prompt,  # Include the prompt field
+        )
 
     def add(self, product: ProductCreate) -> Product:
         """Add a new product"""
@@ -54,7 +62,13 @@ class ProductRepository(BaseRepository[Product]):
 
     def _to_price_history_db(self, price_history: PriceHistoryCreate) -> DBPriceHistory:
         """Convert domain price history to DB model"""
-        return DBPriceHistory(**price_history.model_dump())
+        return DBPriceHistory(
+            product_url=price_history.product_url,
+            price=price_history.price,
+            product_name=price_history.product_name,
+            cabin_type=price_history.cabin_type,  # Include cabin_type if applicable
+            is_lowest=price_history.is_lowest,  # Include is_lowest if applicable
+        )
 
     def get_price_history(self, product_url: str) -> List[PriceHistory]:
         """Get price history for a product"""
@@ -84,6 +98,7 @@ class ProductRepository(BaseRepository[Product]):
             db_product.currency = product.currency
             db_product.main_image_url = product.main_image_url
             db_product.check_date = datetime.now().isoformat()
+            db_product.prompt = product.prompt  # Update the prompt field
             self.session.commit()
             return product
         raise ValueError(f"Product with URL {product.url} not found")

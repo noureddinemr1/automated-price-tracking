@@ -6,12 +6,16 @@ from src.config import settings
 from src.domain.models import Product, ProductCreate, PriceHistoryCreate
 from src.infrastructure.repositories.product_repository import ProductRepository
 from src.services.notifications import send_price_alert
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class PriceService:
     def __init__(self, product_repository: ProductRepository):
         self.repository = product_repository
-        self.firecrawl = FirecrawlApp()
+        self.firecrawl = FirecrawlApp(api_key=os.getenv('FIRECRAWL_API_KEY'))
 
 async def check_prices(self) -> List[Product]:
     """Check prices for all tracked products and send alerts if needed"""

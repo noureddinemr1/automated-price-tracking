@@ -1,20 +1,30 @@
-#product_service
 from typing import Tuple, Optional, Dict, Any
 from datetime import datetime
 from urllib.parse import urlparse
 import re
-
+from dotenv import load_dotenv
 from firecrawl import FirecrawlApp
 from src.domain.models import ProductCreate, PriceHistoryCreate
 from src.infrastructure.repositories.product_repository import ProductRepository
+import os
+
+load_dotenv()
 
 
 class ProductService:
     def __init__(self, product_repository: ProductRepository):
         self.repository = product_repository
-        self.firecrawl = FirecrawlApp()
+        self.firecrawl = FirecrawlApp(api_key=os.getenv('FIRECRAWL_API_KEY'))
 
-    async def add_product(self, url: str) -> Tuple[bool, str]:
+    def _validate_url(self, url: str) -> bool:
+        """Validate URL format"""
+        try:
+            result = urlparse(url)
+            return all([result.scheme, result.netloc])  # Ensure URL has a scheme and netloc
+        except ValueError:
+            return False
+
+    async def add_product(self, url: str, prompt: str = None) -> Tuple[bool, str]:
         """Add a new product to track"""
         if not self._validate_url(url):
             return False, "Please enter a valid URL"
@@ -22,11 +32,12 @@ class ProductService:
         try:
             # Check if product exists
             existing_product = self.repository.get(url)
+
             if existing_product:
                 return False, "Product already being tracked!"
 
             # Scrape product
-            scraped_product = await self._scrape_product(url)
+            scraped_product = await self._scrape_product(url, prompt)
 
             # Create product
             product = self.repository.add(scraped_product)
@@ -46,24 +57,22 @@ class ProductService:
             print(f"Error: {str(e)}")
             return False, f"Error adding product: {str(e)}"
 
-    def _validate_url(self, url: str) -> bool:
-        """Validate URL format"""
-        try:
-            result = urlparse(url)
-            return all([result.scheme, result.netloc])
-        except ValueError:
-            return False
-
-    async def _scrape_product(self, url: str) -> ProductCreate:
+    async def _scrape_product(self, url: str, prompt: str = None) -> ProductCreate:
         """Scrape product details from any e-commerce website"""
-        data = self.firecrawl.scrape_url(
-            url,
-            params={
-                "formats": ["extract"],
-                "extract": {"schema": ProductCreate.model_json_schema()},
+        print("test url ",url)
+        params = {
+            "formats": ["extract"],
+            "extract": {
+                "schema": ProductCreate.model_json_schema(),
             },
-        )
+            "jsonOptions" :{
+                "prompt": prompt,
+            }
+        }
+
+        data = self.firecrawl.scrape_url(url, params=params)
         product_data = {}
+        print(data)
 
         # Use original URL
         product_data["url"] = url
@@ -73,13 +82,16 @@ class ProductService:
         metadata = data.get("metadata", {})
 
         # Merge extract and metadata, prioritizing extract
-        merged_data = {**extract,**metadata}
+        merged_data = {**extract, **metadata}
 
         # Extract product details using a generalized approach
         product_data.update(self._extract_product_details(merged_data))
 
         # Add the check date
         product_data["check_date"] = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+
+        # Include the prompt field in the ProductCreate model
+        product_data["prompt"] = prompt
 
         # Validate that required fields are present
         required_fields = ["name", "price", "currency", "main_image_url", "check_date"]

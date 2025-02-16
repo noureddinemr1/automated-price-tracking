@@ -17,7 +17,7 @@ class Sidebar:
 
         if st.sidebar.button("Add Product") and new_url:
             success, message = asyncio.run(
-                self.product_service.add_product(new_url, prompt=prompt)
+                self.product_service.add_product(new_url, prompt=prompt)  # Pass the prompt
             )
             if success:
                 st.sidebar.success(message)

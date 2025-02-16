@@ -7,6 +7,7 @@ from urllib.parse import urlparse
 Base = declarative_base()
 
 
+
 class Product(Base):
     __tablename__ = "products"
 
@@ -16,6 +17,7 @@ class Product(Base):
     currency = Column(String)
     check_date = Column(String)
     main_image_url = Column(String)
+    prompt = Column(String, nullable=True)  # New field
 
 
 class PriceHistory(Base):

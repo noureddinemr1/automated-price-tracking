@@ -13,40 +13,37 @@ from domain.models import ProductCreate, PriceHistoryCreate
 
 # Load environment variables
 load_dotenv()
-
+app = 
 # Initialize the FirecrawlApp with your API key
 api_key = os.getenv("FIRECRAWL_API_KEY")
-if not api_key:
-    raise ValueError("FIRECRAWL_API_KEY environment variable is not set.")
+def fn() : 
+      
+    params = {
+            "formats": ["extract"],
+            "extract": {"schema": ProductCreate.model_json_schema()},
+            "pageOptions" : {
+                "onlyMainContent" : True
+            }
+        }
+    data = .scrape_url(url, params=params)
+    product_data = {}
 
-app = FirecrawlApp(api_key=api_key)
+        # Use original URL
+    product_data["url"] = url
 
-# URL of the product to scrape
-url = "https://megapc.tn/shop/product/MSI-GeForce-GTX-1660-Ti-ARMOR-6GB-OC"
+        # Check both 'extract' and 'metadata' fields
+    extract = data.get("extract", {})
+    metadata = data.get("metadata", {})
 
-data = app.scrape_url(
-            url,
-            params={
-                "formats": ["extract"],
-                "extract": {"schema": ProductCreate.model_json_schema()},
-            },
-        )
-product_data = {}
+        # Merge extract and metadata, prioritizing extract
+    merged_data = {**extract, **metadata}
 
- # Use original URL
-extract = data["extract"]
-product_data["url"] = url
+        # Extract product details using a generalized approach
+    product_data.update(self._extract_product_details(merged_data))
 
-# Iterate through the metadata to find the price
-for key, value in extract.items():
-    if "name" in key.lower() or "title" in key.lower():
-        product_data["name"] = value
-    if "price" in key.lower():
-        product_data["price"] = value
-    if "currency" in key.lower():
-        product_data["currency"] = value
-    if "image" in key.lower():
-        product_data["main_image_url"] = value
+        # Add the check date
+    product_data["check_date"] = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+    print(product_data)
 
-#get system date now
-print(product_data)
+
+fn()
