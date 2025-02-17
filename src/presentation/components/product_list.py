@@ -3,21 +3,21 @@ import streamlit as st
 from sqlalchemy import desc
 
 from src.services.product_service import ProductService
+from src.services.price_service import PriceService
 from .price_chart import PriceChart
 
 
 class ProductList:
-    def __init__(self, product_service: ProductService):
+    def __init__(self, product_service: ProductService,priceService :PriceService):
         self.product_service = product_service
+        self.priceService=priceService
         self.price_chart = PriceChart()
 
     def render(self, products):
         for product in products:
             with st.container():
                 st.markdown(f"#### {product.name}")
-
-                col1, col2, col3 = st.columns([1, 3, 1])
-
+                col1, col2, col3 = st.columns([1, 3, 3])    
                 # Display product image
                 try:
                     col1.image(product.main_image_url, use_container_width=True)
@@ -55,6 +55,16 @@ class ProductList:
 
                 # Add visit product button
                 col3.link_button("Visit Product", product.url)
+                
+                if col3.button("Scrape now",key=f"scrape_{product.url}"):
+                    self.priceService.update_price(product)
+                col3.download_button(
+                        label="Download History as CSV",
+                        data=self.product_service.get_csv_file(product.url),
+                        file_name=f"{product.name}_history.csv",
+                        mime="text/csv",)
+
+                
 
                 if st.button("Remove from tracking", key=f"remove_{product.url}"):
                     self.product_service.remove_product(product.url)

@@ -1,5 +1,6 @@
 [server]
-fileWatcherType = "auto"
+fileWatcherType = "watchdog"
+runOnSave = true
 
 [browser]
 gatherUsageStats = false

@@ -30,7 +30,7 @@ def render_dashboard(product_service: ProductService, price_service: PriceServic
     )
 
     # Render sidebar
-    sidebar = Sidebar(product_service)
+    sidebar = Sidebar(product_service,price_service)
     sidebar.render()
 
     # Main content
@@ -42,7 +42,7 @@ def render_dashboard(product_service: ProductService, price_service: PriceServic
     if not products:
         st.info("No products are being tracked. Add some using the sidebar!")
     else:
-        product_list = ProductList(product_service)
+        product_list = ProductList(product_service,price_service)
         product_list.render(products)
 
 

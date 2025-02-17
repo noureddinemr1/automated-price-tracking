@@ -3,11 +3,11 @@ from typing import List, Optional
 
 from sqlalchemy import desc
 from sqlalchemy.orm import Session
-
+from sqlalchemy.inspection import inspect
 from src.domain.models import Product, ProductCreate, PriceHistory, PriceHistoryCreate
 from .base import BaseRepository
 from ..database.models import Product as DBProduct, PriceHistory as DBPriceHistory
-
+import pandas as pd
 
 class ProductRepository(BaseRepository[Product]):
     def __init__(self, session: Session):
@@ -69,6 +69,27 @@ class ProductRepository(BaseRepository[Product]):
             cabin_type=price_history.cabin_type,  # Include cabin_type if applicable
             is_lowest=price_history.is_lowest,  # Include is_lowest if applicable
         )
+    def get_csv_prices(self,product_url):
+        """Convert Price history to csv file"""
+
+        db_histories = (
+            self.session.query(DBPriceHistory)
+            .filter_by(product_url=product_url)
+            .order_by(DBPriceHistory.timestamp.asc())
+            .all()
+        )
+    
+        # Convert the list of SQLAlchemy objects to a list of dictionaries.
+        # This assumes your DBPriceHistory model has a to_dict() method.
+        histories = [self.model_to_dict(history) for history in db_histories]
+        df = pd.DataFrame(histories)
+        csv_data = df.to_csv(index=False)
+        return csv_data
+    
+    def model_to_dict(self,instance):
+       """Convert a SQLAlchemy model instance into a dictionary."""
+       return {c.key: getattr(instance, c.key) for c in inspect(instance).mapper.column_attrs}
+    
 
     def get_price_history(self, product_url: str) -> List[PriceHistory]:
         """Get price history for a product"""
