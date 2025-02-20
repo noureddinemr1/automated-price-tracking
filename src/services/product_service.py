@@ -7,6 +7,8 @@ from firecrawl import FirecrawlApp
 from src.domain.models import ProductCreate, PriceHistoryCreate
 from src.infrastructure.repositories.product_repository import ProductRepository
 import os
+import pandas as pd
+
 
 load_dotenv()
 
@@ -23,6 +25,12 @@ class ProductService:
             return all([result.scheme, result.netloc])  # Ensure URL has a scheme and netloc
         except ValueError:
             return False
+        
+
+
+
+    def get_csv_file(self ,product_url : str ):
+        return self.repository.get_csv_prices(product_url)
 
     async def add_product(self, url: str, prompt: str = None) -> Tuple[bool, str]:
         """Add a new product to track"""

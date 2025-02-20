@@ -26,3 +26,26 @@ async def send_price_alert(
             await session.post(settings.DISCORD_WEBHOOK_URL, json=message)
     except Exception as e:
         print(f"Error sending Discord notification: {e}")
+
+async def send_price_error(product_name: str, url: str, error: str):
+    message = {
+        "embeds": [
+            {
+                "title": "Price Update Error",
+                "description": f"**{product_name}**\n Got an error while updating the price\n"
+                f"[View Product]({url})\n"
+                f"Error: {error}\n",  # Make sure you have the correct format and commas
+                "color": 3066993,
+            }
+        ]
+    }
+
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(settings.DISCORD_WEBHOOK_URL, json=message) as response:
+                if response.status == 204:  # No Content status for successful POST
+                    print(f"Error notification sent for {product_name}")
+                else:
+                    print(f"Failed to send error notification. Status code: {response.status}")
+    except Exception as e:
+        print(f"Error sending Discord notification: {e}")
