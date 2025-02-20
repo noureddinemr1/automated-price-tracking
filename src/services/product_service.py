@@ -57,9 +57,12 @@ class ProductService:
             print(f"Error: {str(e)}")
             return False, f"Error adding product: {str(e)}"
 
-    async def _scrape_product(self, url: str, prompt: str = None) -> ProductCreate:
+    async def _scrape_product(self, url: str, prompt: str ) -> ProductCreate:
         """Scrape product details from any e-commerce website"""
-        print("test url ",url)
+        print("----------------------------")
+        print(prompt)
+        print("----------------------------")
+
         params = {
             "formats": ["extract"],
             "extract": {
@@ -73,7 +76,6 @@ class ProductService:
         data = self.firecrawl.scrape_url(url, params=params)
         product_data = {}
         print(data)
-
         # Use original URL
         product_data["url"] = url
 
