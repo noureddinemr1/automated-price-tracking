@@ -1,49 +1,19 @@
-import sys
-import os
 from firecrawl import FirecrawlApp
-from dotenv import load_dotenv
-import datetime
+from pydantic import BaseModel, Field
+from typing import Any, Optional, List
+
+app = FirecrawlApp(api_key='fc-b75c7ffc064941369610bec7c2227513')
 
 
-# Add the 'src' directory to the Python path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-# Import the ProductCreate schema from the domain.models module
-from domain.models import ProductCreate, PriceHistoryCreate
+class ExtractSchema(BaseModel):
+    url: str
+    name: str
 
-# Load environment variables
-load_dotenv()
-app = 
-# Initialize the FirecrawlApp with your API key
-api_key = os.getenv("FIRECRAWL_API_KEY")
-def fn() : 
-      
-    params = {
-            "formats": ["extract"],
-            "extract": {"schema": ProductCreate.model_json_schema()},
-            "pageOptions" : {
-                "onlyMainContent" : True
-            }
-        }
-    data = .scrape_url(url, params=params)
-    product_data = {}
-
-        # Use original URL
-    product_data["url"] = url
-
-        # Check both 'extract' and 'metadata' fields
-    extract = data.get("extract", {})
-    metadata = data.get("metadata", {})
-
-        # Merge extract and metadata, prioritizing extract
-    merged_data = {**extract, **metadata}
-
-        # Extract product details using a generalized approach
-    product_data.update(self._extract_product_details(merged_data))
-
-        # Add the check date
-    product_data["check_date"] = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-    print(product_data)
-
-
-fn()
+data = app.extract([
+  "https://megapc.tn/shop/product/EVENTS/HELLO%20WINTER/SQUIDE-GAME-A1-AMD-Ryzen-3-3200G-8GB-RAM-480-GB-SSD"
+], {
+    'prompt': 'add a comma in the nama field',
+    'schema': ExtractSchema.model_json_schema(),
+})
+print(data)

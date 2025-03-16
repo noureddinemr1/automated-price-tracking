@@ -67,35 +67,19 @@ class ProductService:
 
     async def _scrape_product(self, url: str, prompt: str ) -> ProductCreate:
         """Scrape product details from any e-commerce website"""
-        print("----------------------------")
-        print(prompt)
-        print("----------------------------")
 
         params = {
-            "formats": ["extract"],
-            "extract": {
-                "schema": ProductCreate.model_json_schema(),
-            },
-            "jsonOptions" :{
-                "prompt": prompt,
-            }
+            'prompt': prompt,
+            'schema': ProductCreate.model_json_schema(),
         }
 
-        data = self.firecrawl.scrape_url(url, params=params)
-        product_data = {}
-        print(data)
-        # Use original URL
-        product_data["url"] = url
+        data = self.firecrawl.extract([url],params)
+        product_data = data["data"]
 
-        # Check both 'extract' and 'metadata' fields
-        extract = data.get("extract", {})
-        metadata = data.get("metadata", {})
 
-        # Merge extract and metadata, prioritizing extract
-        merged_data = {**extract, **metadata}
 
         # Extract product details using a generalized approach
-        product_data.update(self._extract_product_details(merged_data))
+        product_data.update(self._extract_product_details(product_data))
 
         # Add the check date
         product_data["check_date"] = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
@@ -103,11 +87,6 @@ class ProductService:
         # Include the prompt field in the ProductCreate model
         product_data["prompt"] = prompt
 
-        # Validate that required fields are present
-        required_fields = ["name", "price", "currency", "main_image_url", "check_date"]
-        for field in required_fields:
-            if field not in product_data:
-                raise ValueError(f"Missing required field: {field}")
 
         return ProductCreate(**product_data)
 
